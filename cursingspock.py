@@ -20,19 +20,17 @@ logger = logging.getLogger('spockbot')
 
 PROMPT = '> '
 
-alnum = list(map(chr, range(ord('a'), ord('z') + 1)))
-alnum += list(map(chr, range(ord('A'), ord('Z') + 1)))
-alnum += list(map(str, range(10)))
+alnum = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
 
-Record = namedtuple('Record', 'seconds levelname message')
+LogMessage = namedtuple('LogMessage', 'seconds levelname message')
 
 
 def draw_bar(val, width, c_full, c_empty=''):
     return (c_full * int(val)).ljust(int(width), c_empty)
 
 
-def nice_log_text(record):
-    t, levelname, message = record
+def nice_log_text(log_msg):
+    t, levelname, message = log_msg
     asctime = time.strftime('%H:%M:%S', time.localtime(t))
     return '%(asctime)s [%(levelname)s] %(message)s' % locals()
 
@@ -152,15 +150,14 @@ class CursesPlugin(PluginBase):
 
     def write_logs(self):
         with open('bat.log', 'a') as f:
-            for record in self.log_msgs[self.log_start_new:]:
-                f.write(nice_log_text(record))
-                f.write('\n')
+            for log_msg in self.log_msgs[self.log_start_new:]:
+                f.write(nice_log_text(log_msg) + '\n')
         self.log_start_new = len(self.log_msgs)
 
     def add_log_record(self, rec):
         """ add a line to the internal list of lines"""
-        record = Record(rec.created, rec.levelname, rec.msg % rec.args)
-        self.log_msgs.append(record)
+        log_msg = LogMessage(rec.created, rec.levelname, rec.msg % rec.args)
+        self.log_msgs.append(log_msg)
         if self.log_index != 0:  # do not scroll when not at bottom of log
             self.log_index += 1  # TODO calculate depending on split lines
         self.redraw_lines = True
@@ -204,10 +201,9 @@ class CursesPlugin(PluginBase):
 
             # TODO rework scrolling and use understandable indices
             i = -self.log_index
-            for record in reversed(self.log_msgs):
-                color = self.colors[record.levelname]
-                line = nice_log_text(record)
-                line_parts = break_line(line, self.cols)
+            for log_msg in reversed(self.log_msgs):
+                color = self.colors[log_msg.levelname]
+                line_parts = break_line(nice_log_text(log_msg), self.cols)
                 try:
                     for line_part in reversed(line_parts):
                         ypos = self.rows - 3 - i
