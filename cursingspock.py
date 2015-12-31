@@ -18,6 +18,8 @@ from spockbot.plugins.base import PluginBase, pl_announce
 
 logger = logging.getLogger('spockbot')
 
+log_path = 'curses.log'
+cmd_path = 'curses.cmds'
 PROMPT = '> '
 
 alnum = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
@@ -117,8 +119,8 @@ class CursesPlugin(PluginBase):
 
         self.redraw()
 
-        try:  # if bat.cmds exists, read previous commands
-            with open('bat.cmds', 'r') as f:
+        try:  # if cmd_path exists, read previous commands
+            with open(cmd_path, 'r') as f:
                 for line in f:
                     self.commands.append(line[:-1])
         except FileNotFoundError:
@@ -128,7 +130,7 @@ class CursesPlugin(PluginBase):
 
         # TODO restore previous logs?
 
-        with open('bat.log', 'a') as f:
+        with open(log_path, 'a') as f:
             f.write(time.strftime('\n===== %Y-%m-%d %H:%M:%S =====\n\n'))
 
     def tick(self, *args):
@@ -144,12 +146,12 @@ class CursesPlugin(PluginBase):
 
         self.write_logs()
 
-        with open('bat.cmds', 'a') as f:
+        with open(cmd_path, 'a') as f:
             for cmd in self.commands[self.cmd_start_new:]:
                 f.write(cmd + '\n')
 
     def write_logs(self):
-        with open('bat.log', 'a') as f:
+        with open(log_path, 'a') as f:
             for log_msg in self.log_msgs[self.log_start_new:]:
                 f.write(nice_log_text(log_msg) + '\n')
         self.log_start_new = len(self.log_msgs)
