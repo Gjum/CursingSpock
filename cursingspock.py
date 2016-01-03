@@ -158,14 +158,19 @@ class CursesPlugin(PluginBase):
 
     def add_log_record(self, rec):
         """ add a line to the internal list of lines"""
-        log_msg = LogMessage(rec.created, rec.levelname, rec.msg % rec.args)
-        self.log_msgs.append(log_msg)
+        try:
+            msg = LogMessage(rec.created, rec.levelname, rec.msg % rec.args)
+        except TypeError:
+            text = 'Wrong log msg format: "%s" %% %s' % (rec.msg, rec.args)
+            text += ''.join(traceback.format_stack())
+            msg = LogMessage(rec.created, 'ERROR', text)
+        self.log_msgs.append(msg)
         if self.log_index != 0:  # do not scroll when not at bottom of log
             self.log_index += 1  # TODO calculate depending on split lines
         self.redraw_lines = True
         self.redraw()
 
-        if len(self.log_msgs) > self.log_start_new + 100:
+        if len(self.log_msgs) > self.log_start_new + 50:
             # write some lines now, so we do not write all at once at the end
             self.write_logs()
 
