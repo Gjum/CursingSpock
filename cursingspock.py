@@ -180,6 +180,14 @@ class CursesPlugin(PluginBase):
         self.event.emit('cmd', {'cmd': command, 'args': args})
         self.event.emit('cmd_%s' % command, {'args': args})
 
+    def remember_and_clear_command(self):
+        if self.command in self.commands[-5:]:  # remove duplicates
+            i = list(reversed(self.commands[-5:])).index(self.command)
+            del self.commands[-i - 1]
+        self.commands.append(self.command)
+        self.commands_index = len(self.commands)
+        self.command = ''
+
     def update_status_text(self):
         gm2string = {
             GM_CREATIVE: 'Creative',
@@ -300,21 +308,15 @@ class CursesPlugin(PluginBase):
             if self.commands_index + 1 < len(self.commands):
                 self.commands_index += 1
                 self.command = self.commands[self.commands_index]
-            else:  # clear current command
-                self.commands_index = len(self.commands)
-                self.command = ''
+            else:
+                self.remember_and_clear_command()
             self.cursor_pos = len(self.command)
 
         # run current command
         elif c == curses.KEY_ENTER or c == 10:
             if self.command:
                 self.execute_command()
-                if self.command in self.commands[-5:]:  # remove duplicates
-                    i = list(reversed(self.commands[-5:])).index(self.command)
-                    del self.commands[-i - 1]
-                self.commands.append(self.command)
-            self.commands_index = len(self.commands)
-            self.command = ''
+                self.remember_and_clear_command()
             self.cursor_pos = 0
             self.log_index = 0
 
