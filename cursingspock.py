@@ -134,7 +134,7 @@ class CursesPlugin(PluginBase):
             f.write(time.strftime('\n===== %Y-%m-%d %H:%M:%S =====\n\n'))
 
     def tick(self, *args):
-        self.read_input()
+        while self.read_input() != -1: pass
         self.redraw()
 
     def kill(self, *args):
@@ -347,6 +347,8 @@ class CursesPlugin(PluginBase):
         else:  # key ignored xxx unneeded
             if c != -1:
                 logger.debug('Key ignored %s', c)
+
+        return c
 
     @property
     def log_index(self):
