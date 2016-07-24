@@ -328,7 +328,7 @@ class CursesPlugin(PluginBase):
                 self.cursor_pos -= 1
 
         elif c == curses.KEY_DC:  # DEL
-            if self.command and self.cursor_pos > 0:
+            if self.command:
                 self.command = self.command[:self.cursor_pos] \
                                + self.command[self.cursor_pos + 1:]
 
