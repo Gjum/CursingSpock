@@ -3,7 +3,7 @@ CursingSpock
 
 A [SpockBot](https://github.com/SpockBotMC/SpockBot) plugin for controlling the client from the terminal. Built with [Curses](https://docs.python.org/3.5/library/curses.html).
 
-![screenshot of a CursingSpock session](https://camo.githubusercontent.com/384ed22294dc1324620b6226cb67cf7d1c80876e/687474703a2f2f6c756e6172636f2e64652f6d696e6563726166742f6261742d6375727365732e706e67)
+![screenshot of a CursingSpock session](https://i.imgur.com/nHVMu4v.png)
 
 Thanks to [gamingrobot](https://github.com/gamingrobot) for the [inspiration](https://github.com/SpockBotMC/SpockBot-Extra/blob/ea07c87b147d7c489c56046b6b8d72fd209d194b/plugins/curses_command.py).
 
